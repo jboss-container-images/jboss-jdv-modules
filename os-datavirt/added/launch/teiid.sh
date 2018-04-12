@@ -132,7 +132,7 @@ function add_users(){
   fi
 
   if [ -n $DATAVIRT_USER_GROUPS ]; then
-    index=0
+    index=0"/>"
     for dv_group in $(echo $DATAVIRT_USER_GROUPS | sed "s/,/ /g"); do
       dv_groups[index]=${dv_group}
       ((index=index+1))
@@ -150,6 +150,19 @@ function add_users(){
   done
 }
 
+function configure_system_properties(){
+
+  if [ -n $DSB_PERSISTENT_LOCATION ]; then
+  
+     system_properties="<system-properties>"
+     system_properties="$system_properties<property name=\"komodo.dataDir\" value=\"$DSB_PERSISTENT_LOCATION\"/>"
+     system_properties="$system_properties</system-properties>"
+     sed -i "s|<!-- ##JDV_SYSTEMPROPERTY## -->|${system_properties}|g" ${CONFIG_FILE}
+     
+  fi
+  
+}
+
 function configure_teiid(){
 
   hostname=`hostname`
@@ -162,6 +175,8 @@ function configure_teiid(){
   add_roles
 
   add_secure_transport
+  
+  configure_system_properties
 
 }
 
