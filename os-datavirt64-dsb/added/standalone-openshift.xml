@@ -29,6 +29,8 @@
         <!-- ##KEYCLOAK_EXTENSION## -->
         <extension module="org.jboss.teiid"/>
     </extensions>
+    
+    <!-- ##JDV_SYSTEMPROPERTY## -->
 
     <management>
         <security-realms>

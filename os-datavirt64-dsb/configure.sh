@@ -18,9 +18,3 @@ for dir in $JBOSS_HOME/standalone /deployments; do
   chown -R jboss:root $dir
   chmod -R g+rwX $dir
 done
-
-DSB_SERVER_OPTS="-Dkomodo.dataDir=/opt/datavirt/dsb/repo"
-
- # append DSB Mount Point for komodo.dataDir property  to JAVA_OPTS
-echo "# Append DSB Mount Point location to JAVA_OPTS" >> $JBOSS_HOME/bin/standalone.conf
-echo "JAVA_OPTS=\"\$JAVA_OPTS ${DSB_SERVER_OPTS}\"" >> $JBOSS_HOME/bin/standalone.conf
