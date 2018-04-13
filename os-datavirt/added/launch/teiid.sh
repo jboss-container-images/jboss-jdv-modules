@@ -150,15 +150,17 @@ function add_users(){
   done
 }
 
-function configure_system_properties(){
+function add_system_property(){
 
   if [ -n $DSB_PERSISTENT_LOCATION ]; then
   
      system_properties="<system-properties>"
-     system_properties="$system_properties<property name=\"komodo.dataDir\" value=\"$DSB_PERSISTENT_LOCATION\"/>"
+     system_properties="$system_properties<property name=\"komodo.dataDir\" value=\"${DSB_PERSISTENT_LOCATION}\"/>"
      system_properties="$system_properties</system-properties>"
-     sed -i "s|<!-- ##JDV_SYSTEMPROPERTY## -->|${system_properties}|g" ${CONFIG_FILE}
+     sed -i "s|<!-- ##JDV_SYSTEMPROPERTY## -->|${system_properties}|g" "${CONFIG_FILE}"
      
+     echo "DSB persistence location system property is $DSB_PERSISTENT_LOCATION"
+
   fi
   
 }
@@ -176,7 +178,7 @@ function configure_teiid(){
 
   add_secure_transport
   
-  configure_system_properties
+  add_system_property
 
 }
 
