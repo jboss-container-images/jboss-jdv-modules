@@ -20,10 +20,13 @@ function prepareEnv() {
   unset JDBC_SECURITY_DOMAIN
   unset ODBC_SECURITY_DOMAIN
   unset ODATA_SECURITY_DOMAIN
+  
+  unset_security_ldap_env
 }
 
 function configure() {
   configure_teiid
+  configure_ldap_security_domain
 }
 
 function add_roles(){
