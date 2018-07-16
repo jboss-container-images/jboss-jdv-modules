@@ -1,10 +1,15 @@
+#!/bin/bash
 
-function prepareEnv() {
+function unset_security_domains_env() {
   unset SECDOMAIN_NAME
   unset SECDOMAIN_USERS_PROPERTIES
   unset SECDOMAIN_ROLES_PROPERTIES
   unset SECDOMAIN_LOGIN_MODULE
   unset SECDOMAIN_PASSWORD_STACKING
+  
+  unset JDBC_SECURITY_DOMAIN
+  unset ODBC_SECURITY_DOMAIN
+  unset ODATA_SECURITY_DOMAIN
 
   for prefix in $(echo $SECURITY_DOMAINS | sed "s/,/ /g"); do
     clearDomainEnv $prefix
@@ -24,9 +29,10 @@ function clearDomainEnv() {
   done
 }
 
-function configure() {
+function configure_domains() {
   configure_legacy_security_domains
   configure_security_domains
+  set_transport_security_domains
 }
 
 function configureEnv() {
@@ -98,4 +104,16 @@ function configure_legacy_security_domains() {
   fi
 
   sed -i "s|<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|${domains}<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|" "$CONFIG_FILE"
+}
+
+function set_transport_security_domains(){
+  DEFAULT_SECURITY_DOMAIN=${DEFAULT_SECURITY_DOMAIN:-teiid-security}
+
+  sed -i "s|##JDBC_SECURITY_DOMAIN##|${JDBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
+  sed -i "s|##ODBC_SECURITY_DOMAIN##|${ODBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
+  sed -i "s|##ODATA_SECURITY_DOMAIN##|${ODATA_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
+  
+  RESULT_DOMAIN=${JDBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}
+  
+  log_info "security domain is ${RESULT_DOMAIN}"
 }

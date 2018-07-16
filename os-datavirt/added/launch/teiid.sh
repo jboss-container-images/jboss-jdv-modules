@@ -2,7 +2,8 @@
 
 source $JBOSS_HOME/bin/launch/launch-common.sh
 source $JBOSS_HOME/bin/launch/files.sh
-source $JBOSS_HOME/bin/launch/logging.sh 
+source $JBOSS_HOME/bin/launch/logging.sh
+source $JBOSS_HOME/bin/launch/security-domains.sh 
 source $JBOSS_HOME/bin/launch/security-ldap.sh 
 
 function prepareEnv() {
@@ -18,16 +19,16 @@ function prepareEnv() {
   unset DATAVIRT_USERS
   unset DATAVIRT_USER_PASSWORDS
   unset DATAVIRT_USER_GROUPS
-  unset JDBC_SECURITY_DOMAIN
-  unset ODBC_SECURITY_DOMAIN
-  unset ODATA_SECURITY_DOMAIN
+
   
   unset_security_ldap_env
+  unset_security_domains_env
 }
 
 function configure() {
   configure_teiid
   configure_ldap_security_domain
+  configure_domains
 }
 
 function add_roles(){
@@ -157,14 +158,6 @@ function add_users(){
   done
 }
 
-function set_security_domains(){
-  DEFAULT_SECURITY_DOMAIN=${DEFAULT_SECURITY_DOMAIN:-teiid-security}
-
-  sed -i "s|##JDBC_SECURITY_DOMAIN##|${JDBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
-  sed -i "s|##ODBC_SECURITY_DOMAIN##|${ODBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
-  sed -i "s|##ODATA_SECURITY_DOMAIN##|${ODATA_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
-}
-
 function configure_teiid(){
 
   hostname=`hostname`
@@ -177,8 +170,6 @@ function configure_teiid(){
   add_roles
 
   add_secure_transport
-
-  set_security_domains
 
 }
 

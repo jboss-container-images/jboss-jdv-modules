@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+       <subsystem xmlns="urn:jboss:domain:teiid:1.0">
+            <async-thread-pool>teiid-async</async-thread-pool>
+            <policy-decider-module>org.jboss.teiid</policy-decider-module>
+            <resultset-cache infinispan-container="teiid-cache"/>
+            <preparedplan-cache infinispan-container="teiid-cache"/>
+            <distributed-cache jgroups-stack="tcp"/>
+            <transport name="embedded"/>
+            <transport name="odata">
+                <authentication security-domain="testSecurityDomain"/>
+            </transport>
+            <transport name="jdbc" socket-binding="teiid-jdbc" protocol="teiid">
+                <authentication security-domain="testSecurityDomain"/>
+            </transport>
+            <transport name="odbc" socket-binding="teiid-odbc" protocol="pg">
+                <authentication security-domain="testSecurityDomain"/>
+                <ssl mode="disabled"/>
+            </transport>
+            <!-- ##TEIID_SECURE_TRANSPORT## -->
+            <translator name="jdbc-simple" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="jdbc-ansi" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="access" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="db2" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="derby" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="h2" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="hsql" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="informix" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="metamatrix" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="mysql" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="mysql5" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="oracle" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="postgresql" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="greenplum" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="sqlserver" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="sybase" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="sybaseiq" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="teiid" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="teradata" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="modeshape" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="ingres" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="ingres93" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="intersystems-cache" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="netezza" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="file" module="org.jboss.teiid.translator.file"/>
+            <translator name="ldap" module="org.jboss.teiid.translator.ldap"/>
+            <translator name="loopback" module="org.jboss.teiid.translator.loopback"/>
+            <translator name="olap" module="org.jboss.teiid.translator.olap"/>
+            <translator name="ws" module="org.jboss.teiid.translator.ws"/>
+            <translator name="salesforce" module="org.jboss.teiid.translator.salesforce"/>
+            <translator name="salesforce-34" module="org.jboss.teiid.translator.salesforce" slot="34"/>
+            <translator name="hive" module="org.jboss.teiid.translator.hive"/>
+            <translator name="google-spreadsheet" module="org.jboss.teiid.translator.google"/>
+            <translator name="odata" module="org.jboss.teiid.translator.odata"/>
+            <translator name="sap-gateway" module="org.jboss.teiid.translator.odata"/>
+            <translator name="sap-nw-gateway" module="org.jboss.teiid.translator.odata"/>
+            <translator name="mongodb" module="org.jboss.teiid.translator.mongodb"/>
+            <translator name="cassandra" module="org.jboss.teiid.translator.cassandra"/>
+            <translator name="accumulo" module="org.jboss.teiid.translator.accumulo"/>
+            <translator name="solr" module="org.jboss.teiid.translator.solr"/>
+            <translator name="excel" module="org.jboss.teiid.translator.excel"/>
+            <translator name="impala" module="org.jboss.teiid.translator.hive"/>
+            <translator name="prestodb" module="org.jboss.teiid.translator.prestodb"/>
+            <translator name="hbase" module="org.jboss.teiid.translator.hbase"/>
+            <translator name="hana" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="vertica" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="actian-vector" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="osisoft-pi" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="odata4" module="org.jboss.teiid.translator.odata4"/>
+            <translator name="redshift" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="jpa2" module="org.jboss.teiid.translator.jpa"/>
+            <translator name="ucanaccess" module="org.jboss.teiid.translator.jdbc"/>
+            <translator name="simpledb" module="org.jboss.teiid.translator.simpledb"/>
+            <translator name="couchbase" module="org.jboss.teiid.translator.couchbase"/>
+            <translator name="infinispan-hotrod" module="org.jboss.teiid.translator.infinispan.hotrod"/>
+
+            <translator name="infinispan-cache-dsl" module="org.jboss.teiid.translator.infinispan.dsl"/>
+            <translator name="infinispan-cache" module="org.jboss.teiid.translator.infinispan.cache"/>
+
+            <!-- ##TEIID_TRANSLATORS## -->
+        </subsystem>

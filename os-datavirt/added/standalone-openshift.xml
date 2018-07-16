@@ -27,7 +27,6 @@
         <extension module="org.jboss.as.webservices"/>
         <extension module="org.jboss.as.weld"/>
         <!-- ##KEYCLOAK_EXTENSION## -->
-        <extension module="org.modeshape"/>
         <extension module="org.jboss.teiid"/>
     </extensions>
 
@@ -87,7 +86,7 @@
         <subsystem xmlns="urn:jboss:domain:logging:1.5">
             <console-handler name="CONSOLE">
                 <formatter>
-                    <named-formatter name="##CONSOLE-FORMATTER##"/>
+                    <named-formatter name="COLOR-PATTERN"/>
                 </formatter>
             </console-handler>
             <logger category="com.arjuna">
@@ -128,16 +127,6 @@
         <subsystem xmlns="urn:jboss:domain:datasources:1.2">
             <datasources>
                 <!-- ##DATASOURCES## -->
-                <datasource jndi-name="java:/datasources/ModeShapeDS" pool-name="ModeShapeDS" enabled="true" use-java-context="true">
-                    <connection-url>jdbc:jcr:jndi:jcr?repositoryName=dv</connection-url>
-                    <connection-property name="teiidsupport">
-                        true
-                    </connection-property>
-                    <driver>modeshape</driver>
-                    <security>
-                        <security-domain>encrypted-modeshape</security-domain>
-                    </security>
-                </datasource>
                 <drivers>
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
@@ -147,9 +136,6 @@
                     </driver>
                     <driver name="postgresql" module="org.postgresql">
                         <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
-                    </driver>
-                     <driver name="modeshape" module="org.modeshape.jdbc">
-                        <driver-class>org.modeshape.jdbc.LocalJcrDriver</driver-class>
                     </driver>
                     <driver name="teiid" module="org.jboss.teiid.client">
                         <driver-class>org.teiid.jdbc.TeiidDriver</driver-class>
@@ -260,23 +246,8 @@
                     <eviction strategy="NONE"/>
                 </replicated-cache>
             </cache-container>
-            <cache-container name="modeshape" default-cache="dv" module="org.modeshape">
-                <transport lock-timeout="60000"/>
-                <replicated-cache name="dv" mode="ASYNC" batching="true">
-                    <locking isolation="READ_COMMITTED"/>
-                    <transaction mode="NON_XA"/>
-                    <eviction strategy="LIRS" max-entries="1024"/>
-                    <expiration lifespan="7200000"/>
-                </replicated-cache>
-            </cache-container>
             <cache-container name="teiid-cache" default-cache="resultset">
                 <transport lock-timeout="60000"/>
-                <replicated-cache name="resultset-repl" mode="SYNC" batching="true">
-                    <locking isolation="READ_COMMITTED"/>
-                    <transaction mode="NON_XA"/>
-                    <eviction strategy="LIRS" max-entries="1024"/>
-                    <expiration lifespan="7200000"/>
-                </replicated-cache>
                 <local-cache name="resultset" batching="true">
                     <locking isolation="READ_COMMITTED"/>
                     <transaction mode="NON_XA"/>
@@ -288,6 +259,12 @@
                     <eviction strategy="LIRS" max-entries="512"/>
                     <expiration lifespan="28800"/>
                 </local-cache>
+                <replicated-cache name="resultset-repl" mode="SYNC" batching="true">
+                    <locking isolation="READ_COMMITTED"/>
+                    <transaction mode="NON_XA"/>
+                    <eviction strategy="LIRS" max-entries="1024"/>
+                    <expiration lifespan="7200000"/>
+                </replicated-cache>
             </cache-container>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jaxrs:1.0"/>
@@ -376,7 +353,7 @@
         <subsystem xmlns="urn:jboss:domain:resource-adapters:1.1">
             <resource-adapters>
                 <!-- ##RESOURCE_ADAPTERS## -->
-                 <resource-adapter id="file">
+                <resource-adapter id="file">
                     <module slot="main" id="org.jboss.teiid.resource-adapter.file"/>
                 </resource-adapter>
                 <resource-adapter id="google">
@@ -409,6 +386,12 @@
                 <resource-adapter id="solr">
                     <module slot="main" id="org.jboss.teiid.resource-adapter.solr"/>
                 </resource-adapter>
+                <resource-adapter id="couchbase">
+                    <module slot="main" id="org.jboss.teiid.resource-adapter.couchbase"/>
+                </resource-adapter>
+                <resource-adapter id="infinispan-hotrod">
+                    <module slot="main" id="org.jboss.teiid.resource-adapter.infinispan.hotrod"/>
+                </resource-adapter>
             </resource-adapters>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:sar:1.0"/>
@@ -422,6 +405,7 @@
                         <login-module code="RealmDirect" flag="required">
                             <module-option name="password-stacking" value="useFirstPass"/>
                         </login-module>
+                        <!-- ##OTHER_LOGIN_MODULES## -->
                     </authentication>
                 </security-domain>
                 <security-domain name="jboss-web-policy" cache-type="default">
@@ -438,21 +422,6 @@
                     <authentication>
                         <login-module code="RealmDirect" flag="sufficient">
                             <module-option name="password-stacking" value="useFirstPass"/>
-                        </login-module>
-                    </authentication>
-                </security-domain>
-                <security-domain name="modeshape-security">
-                    <authentication>
-                        <login-module code="RealmDirect" flag="required">
-                            <module-option name="password-stacking" value="useFirstPass"/>
-                        </login-module>
-                    </authentication>
-                </security-domain>
-                <security-domain name="encrypted-modeshape">
-                    <authentication>
-                        <login-module code="org.picketbox.datasource.security.SecureIdentityLoginModule" flag="required">
-                            <module-option name="username" value="##MODESHAPE_USERNAME##"/>
-                            <module-option name="password" value="##MODESHAPE_PASSWORD##"/>
                         </login-module>
                     </authentication>
                 </security-domain>
@@ -479,9 +448,8 @@
             <connector name="http" protocol="HTTP/1.1" scheme="http" socket-binding="http"/>
             <!-- ##HTTPS## -->
             <virtual-server name="default-host" enable-welcome-root="false"/>
-            <valve name="remoteIp" module="org.jboss.as.web" class-name="org.apache.catalina.valves.RemoteIpValve">
-                <param param-name="remoteIpHeader" param-value="X-Forwarded-For" />
-                <param param-name="protocolHeader" param-value="X-Forwarded-Proto" />
+            <valve name="accessLog" module="org.jboss.openshift" class-name="org.jboss.openshift.valves.StdoutAccessLogValve">
+                <param param-name="pattern" param-value="%h %l %u %t &quot;%r&quot; %s %b" />
             </valve>
             <!-- ##ACCESS_LOG_VALVE## -->
         </subsystem>
@@ -497,34 +465,12 @@
             <client-config name="Standard-Client-Config"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:weld:1.0"/>
-         <subsystem xmlns="urn:jboss:domain:modeshape:1.0">
-            <repository name="dv" cache-name="dv" cache-container="modeshape" anonymous-roles="readonly">
-                <workspaces>
-                    <initial-content>
-                        initial-content-default.xml
-                    </initial-content>
-                </workspaces>
-                <sequencers>
-                    <sequencer name="delimited-text-sequencer" classname="org.modeshape.sequencer.text.DelimitedTextSequencer" module="org.modeshape.sequencer.text" splitPattern="," path-expression="/files(//*.csv[*])/jcr:content[@jcr:data] => /derived/text/delimited/$1"/>
-                    <sequencer name="fixed-width-text-sequencer" classname="org.modeshape.sequencer.text.FixedWidthTextSequencer" module="org.modeshape.sequencer.text" commentMarker="#" path-expression="/files(//*.txt[*])/jcr:content[@jcr:data] => /derived/text/fixedWidth/$1"/>
-                    <sequencer name="cnd-sequencer" classname="cnd" module="org.modeshape" path-expression="/files(//*.cnd[*])/jcr:content[@jcr:data] => /derived/cnd/$1"/>
-                    <sequencer name="xsd-sequencer" classname="xsd" module="org.modeshape.sequencer.xsd" path-expression="/files(//*.xsd[*])/jcr:content[@jcr:data] => /derived/xsd/$1"/>
-                    <sequencer name="wsdl-sequencer" classname="wsdl" module="org.modeshape.sequencer.wsdl" path-expression="/files(//*.wsdl[*])/jcr:content[@jcr:data] => /derived/wsdl/$1"/>
-                    <sequencer name="xml-sequencer" classname="xml" module="org.modeshape.sequencer.xml" path-expression="/files(//*.xml[*])/jcr:content[@jcr:data] => /derived/xml/$1"/>
-                    <sequencer name="zip-sequencer" classname="zip" module="org.modeshape.sequencer.zip" path-expression="/files(//*.zip[*])/jcr:content[@jcr:data] => /derived/zip/$1"/>
-                    <sequencer name="teiid-ddl-sequencer" classname="org.teiid.modeshape.sequencer.ddl.TeiidDdlSequencer" module="org.jboss.teiid.modeshape.sequencer.ddl" path-expression="/files(//*.ddl[*])/jcr:content[@jcr:data] => /derived/ddl/$1"/>
-                    <sequencer name="teiid-model-sequencer" classname="org.teiid.modeshape.sequencer.vdb.model.ModelSequencer" module="org.jboss.teiid.modeshape.sequencer.vdb" path-expression="/files(//*.xmi[*])/jcr:content[@jcr:data] => /derived/teiid/models/$1"/>
-                    <sequencer name="teiid-vdb-sequencer" classname="org.teiid.modeshape.sequencer.vdb.VdbSequencer" module="org.jboss.teiid.modeshape.sequencer.vdb" path-expression="/files(//*.vdb[*])/jcr:content[@jcr:data] => /derived/teiid/vdbs/$1"/>
-                </sequencers>
-            </repository>
-            <webapp name="modeshape-rest.war"/>
-        </subsystem>
         <subsystem xmlns="urn:jboss:domain:teiid:1.0">
             <async-thread-pool>teiid-async</async-thread-pool>
-            <distributed-cache jgroups-stack="tcp"/>
             <policy-decider-module>org.jboss.teiid</policy-decider-module>
             <resultset-cache infinispan-container="teiid-cache"/>
             <preparedplan-cache infinispan-container="teiid-cache"/>
+            <distributed-cache jgroups-stack="tcp"/>
             <transport name="embedded"/>
             <transport name="odata">
                 <authentication security-domain="##ODATA_SECURITY_DOMAIN##"/>
@@ -532,11 +478,11 @@
             <transport name="jdbc" socket-binding="teiid-jdbc" protocol="teiid">
                 <authentication security-domain="##JDBC_SECURITY_DOMAIN##"/>
             </transport>
-            <!-- ##TEIID_SECURE_TRANSPORT## -->
             <transport name="odbc" socket-binding="teiid-odbc" protocol="pg">
                 <authentication security-domain="##ODBC_SECURITY_DOMAIN##"/>
                 <ssl mode="disabled"/>
             </transport>
+            <!-- ##TEIID_SECURE_TRANSPORT## -->
             <translator name="jdbc-simple" module="org.jboss.teiid.translator.jdbc"/>
             <translator name="jdbc-ansi" module="org.jboss.teiid.translator.jdbc"/>
             <translator name="access" module="org.jboss.teiid.translator.jdbc"/>
@@ -590,6 +536,8 @@
             <translator name="jpa2" module="org.jboss.teiid.translator.jpa"/>
             <translator name="ucanaccess" module="org.jboss.teiid.translator.jdbc"/>
             <translator name="simpledb" module="org.jboss.teiid.translator.simpledb"/>
+            <translator name="couchbase" module="org.jboss.teiid.translator.couchbase"/>
+            <translator name="infinispan-hotrod" module="org.jboss.teiid.translator.infinispan.hotrod"/>
 
             <translator name="infinispan-cache-dsl" module="org.jboss.teiid.translator.infinispan.dsl"/>
             <translator name="infinispan-cache" module="org.jboss.teiid.translator.infinispan.cache"/>
@@ -607,7 +555,6 @@
         <interface name="public">
             <nic name="eth0"/>
         </interface>
-        <!-- TODO - only show this if the jacorb subsystem is added  -->
         <interface name="unsecure">
             <!--
               ~  Used for IIOP sockets in the standard configuration.
@@ -639,17 +586,5 @@
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
     </socket-binding-group>
-
-    <!--deployments>
-        <deployment name="ModeShape.vdb" runtime-name="ModeShape.vdb">
-            <fs-exploded path="dataVirtualization/vdb/ModeShape.vdb/" relative-to="jboss.home.dir"/>
-        </deployment>
-        <deployment name="teiid-odata.war" runtime-name="teiid-odata.war">
-            <fs-exploded path="dataVirtualization/vdb/teiid-odata.war/" relative-to="jboss.home.dir"/>
-        </deployment>
-        <deployment name="teiid-olingo-odata4.war" runtime-name="teiid-olingo-odata4.war">
-            <fs-exploded path="dataVirtualization/vdb/teiid-olingo-odata4.war/" relative-to="jboss.home.dir"/>
-        </deployment>
-    </deployments-->
 
 </server>
