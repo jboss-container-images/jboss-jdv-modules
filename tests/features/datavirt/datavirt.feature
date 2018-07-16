@@ -60,7 +60,7 @@ Feature: OpenShift Datavirt tests
   Scenario: Configure jdv server to use LDAP authentication
     When container is started with env
       | variable          | value     |
-      | AUTH_LDAP_URL     | test_url  |
+      | AUTH_LDAP_URL	  | test_url  |
     Then container log should contain AUTH_LDAP_URL is set to test_url. Added LdapExtended login-module
     And file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="LdapExtended"
 

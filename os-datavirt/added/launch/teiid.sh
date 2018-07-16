@@ -3,6 +3,7 @@
 source $JBOSS_HOME/bin/launch/launch-common.sh
 source $JBOSS_HOME/bin/launch/files.sh
 source $JBOSS_HOME/bin/launch/logging.sh 
+source $JBOSS_HOME/bin/launch/security-ldap.sh 
 
 function prepareEnv() {
   unset TEIID_PASSWORD
