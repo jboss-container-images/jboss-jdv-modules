@@ -1,4 +1,4 @@
-load ../../../tests/bats/common/logging
+load ./common/logging
 
 function assert_xml() {
   local file=$1

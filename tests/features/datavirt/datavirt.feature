@@ -52,6 +52,16 @@ Feature: OpenShift Datavirt tests
       | DATAVIRT_TRANSPORT_KEYSTORE_DIR          | /etc/jdv-secret-volume                      |
     Then container log should contain WARN Secure JDBC transport missing alias, keystore, key password, and/or keystore directory for authentication mode '1-way'. Will not be enabled
 
+  Scenario: Don't configure jdv server to use LDAP authentication
+    When container is ready
+    Then container log should contain AUTH_LDAP_URL not set. Skipping LDAP integration...
+    And file /opt/eap/standalone/configuration/standalone-openshift.xml should not contain <login-module code="LdapExtended"
+  Scenario: Configure jdv server to use LDAP authentication
+    When container is started with env
+      | variable          | value     |
+      | AUTH_LDAP_URL | test_url  |
+    Then container log should contain AUTH_LDAP_URL is set to test_url. Added LdapExtended login-module
+    And file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="LdapExtended"
 
   # [CLOUD-1862] Add custom configuration to define 
   Scenario: Check if teiid-security is defined if no default login module is specified
