@@ -10,17 +10,15 @@ cp $BATS_TEST_DIRNAME/../../os-datavirt/added/launch/*.sh $JBOSS_HOME/bin/launch
 
 export CONFIG_FILE=$JBOSS_HOME/standalone/configuration/standalone-openshift.xml
 
-source $JBOSS_HOME/bin/launch/security-domains.sh
+source $JBOSS_HOME/bin/launch/transport-security-domains.sh
 
 setup() {
   cp $BATS_TEST_DIRNAME/resources/standalone-security-domains.xml $CONFIG_FILE
   run unset_security_domains_env
 }
 
-@test "replace placeholder with default" {
+@test "replace transport security domain placeholder with default" {
     DEFAULT_SECURITY_DOMAIN="testSecurityDomain"
-
-#    run configure_domains
 
     run set_transport_security_domains
 

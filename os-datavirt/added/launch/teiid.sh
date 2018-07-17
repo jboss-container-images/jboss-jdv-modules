@@ -3,7 +3,7 @@
 source $JBOSS_HOME/bin/launch/launch-common.sh
 source $JBOSS_HOME/bin/launch/files.sh
 source $JBOSS_HOME/bin/launch/logging.sh
-source $JBOSS_HOME/bin/launch/security-domains.sh 
+source $JBOSS_HOME/bin/launch/transport-security-domains.sh 
 source $JBOSS_HOME/bin/launch/security-ldap.sh 
 
 function prepareEnv() {
@@ -28,7 +28,7 @@ function prepareEnv() {
 function configure() {
   configure_teiid
   configure_ldap_security_domain
-  configure_domains
+  set_transport_security_domains
 }
 
 function add_roles(){

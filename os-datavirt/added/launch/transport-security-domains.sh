@@ -1,0 +1,23 @@
+#!/bin/bash
+
+function unset_security_domains_env() {
+
+  unset JDBC_SECURITY_DOMAIN
+  unset ODBC_SECURITY_DOMAIN
+  unset ODATA_SECURITY_DOMAIN
+
+  unset SECURITY_DOMAINS
+
+}
+
+function set_transport_security_domains(){
+  DEFAULT_SECURITY_DOMAIN=${DEFAULT_SECURITY_DOMAIN:-teiid-security}
+
+  sed -i "s|##JDBC_SECURITY_DOMAIN##|${JDBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
+  sed -i "s|##ODBC_SECURITY_DOMAIN##|${ODBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
+  sed -i "s|##ODATA_SECURITY_DOMAIN##|${ODATA_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}|g" ${CONFIG_FILE}
+  
+  RESULT_DOMAIN=${JDBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}
+  
+  log_info "security domain is ${RESULT_DOMAIN}"
+}
