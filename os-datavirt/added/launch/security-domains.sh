@@ -31,12 +31,13 @@ function clearDomainEnv() {
 
 function configure_domains() {
   configure_legacy_security_domains
-  configure_security_domains
+#  configure_security_domains
   set_transport_security_domains
 }
 
 function configureEnv() {
   configure_security_domains
+  set_transport_security_domains
 }
 
 function configure_security_domains() {

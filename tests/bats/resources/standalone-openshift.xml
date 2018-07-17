@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
         <subsystem xmlns="urn:jboss:domain:security:2.0">
             <!-- ##ELYTRON_INTEGRATION## -->
             <security-domains>

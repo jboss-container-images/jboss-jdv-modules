@@ -6,7 +6,7 @@ function unset_security_domains_env() {
   unset ODBC_SECURITY_DOMAIN
   unset ODATA_SECURITY_DOMAIN
 
-  unset SECURITY_DOMAINS
+  unset DEFAULT_SECURITY_DOMAIN
 
 }
 
@@ -19,5 +19,5 @@ function set_transport_security_domains(){
   
   RESULT_DOMAIN=${JDBC_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}
   
-  log_info "security domain is ${RESULT_DOMAIN}"
+  log_info "security domain for JDBC transport is ${RESULT_DOMAIN}"
 }
