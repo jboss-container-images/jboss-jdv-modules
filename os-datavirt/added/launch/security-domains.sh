@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source $JBOSS_HOME/bin/launch/security-ldap.sh 
+
 function unset_security_domains_env() {
   unset SECDOMAIN_NAME
   unset SECDOMAIN_USERS_PROPERTIES
@@ -10,11 +12,15 @@ function unset_security_domains_env() {
   unset JDBC_SECURITY_DOMAIN
   unset ODBC_SECURITY_DOMAIN
   unset ODATA_SECURITY_DOMAIN
+  
+  unset DEFAULT_SECURITY_DOMAIN
 
   for prefix in $(echo $SECURITY_DOMAINS | sed "s/,/ /g"); do
     clearDomainEnv $prefix
   done
   unset SECURITY_DOMAINS
+  
+  unset_security_ldap_env
 
 }
 
@@ -31,13 +37,14 @@ function clearDomainEnv() {
 
 function configure_domains() {
   configure_legacy_security_domains
-#  configure_security_domains
-  set_transport_security_domains
+  configureEnv
 }
 
 function configureEnv() {
   configure_security_domains
+  configure_ldap_security_domain
   set_transport_security_domains
+
 }
 
 function configure_security_domains() {

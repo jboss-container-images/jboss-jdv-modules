@@ -33,7 +33,6 @@ function unset_security_ldap_env() {
     unset AUTH_LDAP_USERNAME_END_STRING
     unset AUTH_LDAP_THROW_VALIDATE_ERROR
     
-    unset DEFAULT_SECURITY_DOMAIN
 }
 
 function add_module() {
@@ -95,7 +94,8 @@ function configure_ldap_security_domain() {
     security_domain=$(add_module "$security_domain" "usernameBeginString"            "${AUTH_LDAP_USERNAME_BEGIN_STRING}")
     security_domain=$(add_module "$security_domain" "usernameEndString"              "${AUTH_LDAP_USERNAME_END_STRING}")
     security_domain=$(add_module "$security_domain" "referralUserAttributeIDToCheck" "${AUTH_LDAP_USER_ATTRIBUTE_ID_TO_CHECK}") 
-     
+   #   security_domain=$(add_module "$security_domain" "referralUserAttributeIDToCheck" "${AUTH_LDAP_USER_ATTRIBUTE_ID_TO_CHECK}") 
+    
     security_domain="$security_domain \
                                     </login-module>\
                                 </authentication>\

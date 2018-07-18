@@ -56,7 +56,7 @@ Feature: OpenShift Datavirt tests
   Scenario: Don't configure jdv server to use LDAP authentication
     When container is ready
     Then container log should contain AUTH_LDAP_URL not set. Skipping LDAP integration...
-    And file /opt/eap/standalone/configuration/standalone-openshift.xml should not contain <login-module code="LdapExtended"
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value LdapExtended on XPath //*[local-name()='login-module']/@code
 
   @wip
   Scenario: Configure jdv server to use LDAP authentication
@@ -75,7 +75,7 @@ Feature: OpenShift Datavirt tests
   Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
 
   @wip
-  Scenario: Check if teiid-security is defined if no default login module is specified
+  Scenario: Check if teiid-security is set to testing for default security domain
     When container is started with env
       | variable                | value   |
       | DEFAULT_SECURITY_DOMAIN | testing |

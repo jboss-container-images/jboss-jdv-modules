@@ -3,8 +3,6 @@
 source $JBOSS_HOME/bin/launch/launch-common.sh
 source $JBOSS_HOME/bin/launch/files.sh
 source $JBOSS_HOME/bin/launch/logging.sh
-source $JBOSS_HOME/bin/launch/transport-security-domains.sh 
-source $JBOSS_HOME/bin/launch/security-ldap.sh 
 
 function prepareEnv() {
   unset TEIID_PASSWORD
@@ -19,16 +17,10 @@ function prepareEnv() {
   unset DATAVIRT_USERS
   unset DATAVIRT_USER_PASSWORDS
   unset DATAVIRT_USER_GROUPS
-
-  
-  unset_security_ldap_env
-  unset_security_domains_env
 }
 
 function configure() {
   configure_teiid
-  configure_ldap_security_domain
-  set_transport_security_domains
 }
 
 function add_roles(){
@@ -170,6 +162,8 @@ function configure_teiid(){
   add_roles
 
   add_secure_transport
+  
+  
 
 }
 
