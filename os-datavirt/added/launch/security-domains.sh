@@ -2,7 +2,7 @@
 
 source $JBOSS_HOME/bin/launch/security-ldap.sh 
 
-function unset_security_domains_env() {
+function prepareEnv() {
   unset SECDOMAIN_NAME
   unset SECDOMAIN_USERS_PROPERTIES
   unset SECDOMAIN_ROLES_PROPERTIES
@@ -35,16 +35,15 @@ function clearDomainEnv() {
   done
 }
 
-function configure_domains() {
+function configure() {
   configure_legacy_security_domains
-  configureEnv
+  configure_security_domains
+  configure_ldap_security_domain
+
 }
 
 function configureEnv() {
-  configure_security_domains
-  configure_ldap_security_domain
-  set_transport_security_domains
-
+  configure
 }
 
 function configure_security_domains() {
