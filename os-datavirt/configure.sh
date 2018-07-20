@@ -9,7 +9,6 @@ cp -p ${ADDED_DIR}/standalone-openshift.xml $JBOSS_HOME/standalone/configuration
 
 cp ${ADDED_DIR}/layers.conf ${JBOSS_HOME}/modules
 
-${ADDED_DIR}/launch
 cp -a ${ADDED_DIR}/launch $JBOSS_HOME/bin
 chmod -R g+rwX ${JBOSS_HOME}/bin/
 cp -p ${ADDED_DIR}/openshift-launch.sh ${ADDED_DIR}/openshift-migrate.sh ${JBOSS_HOME}/bin/
