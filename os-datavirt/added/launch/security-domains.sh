@@ -39,6 +39,7 @@ function configure() {
   configure_legacy_security_domains
   configure_security_domains
   configure_ldap_security_domain
+  set_transport_security_domains
 
 }
 
