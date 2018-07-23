@@ -56,7 +56,7 @@ Feature: OpenShift Datavirt tests
   Scenario: Don't configure jdv server to use LDAP authentication
     When container is ready
     Then container log should contain AUTH_LDAP_URL not set. Skipping LDAP integration...
-    And XML file /opt/eap/standalone/configuration/standalone-openshift.xml should not contain <login-module code="LdapExtended"
+    And file /opt/eap/standalone/configuration/standalone-openshift.xml should not contain <login-module code="LdapExtended"
 
   @wip
   Scenario: Configure jdv server to use LDAP authentication
