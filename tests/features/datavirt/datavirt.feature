@@ -93,5 +93,3 @@ Feature: OpenShift Datavirt tests
     Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-odata on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
     Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='jdbc']/*[local-name()='authentication']/@security-domain
     Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-odbc on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
-
-

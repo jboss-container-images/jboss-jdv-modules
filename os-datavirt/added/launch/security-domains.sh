@@ -81,7 +81,9 @@ function configure_security_domains() {
             for option in $(echo $options); do
                 option_name=$(find_env ${option})
                 option_value=$(find_env `sed 's/_NAME_/_VALUE_/' <<< ${option}`)
-                security_domain="$security_domain <module-option name=\"$option_name\" value=\"$option_value\"/>"
+                if [ -n "$option_value" ]; then
+                    security_domain="$security_domain <module-option name=\"$option_name\" value=\"$option_value\"/>"
+                fi
             done
             
             security_domain="$security_domain </login-module>"
