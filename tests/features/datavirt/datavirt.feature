@@ -57,6 +57,3 @@ Feature: OpenShift Datavirt tests
     When container is ready
     Then file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="RealmDirect"
     AND XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='security-domain']/@name
-
-
-    
