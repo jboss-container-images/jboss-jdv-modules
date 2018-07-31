@@ -2,7 +2,6 @@
 
 source $JBOSS_HOME/bin/launch/launch-common.sh
 source $JBOSS_HOME/bin/launch/logging.sh
-#source $JBOSS_HOME/bin/launch/security-ldap.sh 
 
 function prepareEnv() {
   unset SECDOMAIN_NAME
@@ -22,8 +21,6 @@ function prepareEnv() {
   done
   unset SECURITY_DOMAINS
   
-#  unset_security_ldap_env
-
 }
 
 function clearDomainEnv() {
@@ -38,19 +35,23 @@ function clearDomainEnv() {
 }
 
 function configure() {
+  log_info "start Configure security domain"
   configure_security_domains
-#  configure_ldap_security_domain
   configure_legacy_security_domains
   set_transport_security_domains
 
 }
 
 function configureEnv() {
+  log_info "start ConfigureEnv security domain"
   configure
 }
 
 function configure_security_domains() {
   if [ -n "$SECURITY_DOMAINS" ]; then
+  
+    log_info "Configure security domains $SECURITY_DOMAINS"
+
     for domain_prefix in $(echo $SECURITY_DOMAINS | sed "s/,/ /g"); do
 
       local security_domain_name=$(find_env ${domain_prefix}_SECURITY_DOMAIN_NAME)
@@ -93,7 +94,8 @@ function configure_security_domains() {
         security_domain="$security_domain </authentication></security-domain>"
         sed -i "s|<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|${security_domain}<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|" "$CONFIG_FILE"
         
-      
+        log_info "Security domain config ${security_domain}"
+
       else
       
         log_warning "${domain_prefix} security domain has no login modules defined for property ${domain_prefix}_SECURITY_DOMAIN_LOGIN_MODULES"
@@ -111,6 +113,9 @@ function configure_security_domains() {
 }
 
 function configure_default_domain() {
+    log_info "Configure default security domain teiid-security"
+
+    
     DEFAULT_SECURITY_DOMAIN=${DEFAULT_SECURITY_DOMAIN:-teiid-security}
 
     SECURITY_DOMAINS="teiid_security"
@@ -131,7 +136,6 @@ function configure_default_domain() {
     
     configure_security_domains
     
-#    log_info "Configured default security domain teiid-security"
 }
 
 function configure_legacy_security_domains() {

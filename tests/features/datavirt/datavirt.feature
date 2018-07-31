@@ -73,23 +73,21 @@ Feature: OpenShift Datavirt tests
     When container is started with env
       | variable                | value     |
       | SECURITY_DOMAINS	    | teiid_security  |
-      | JDBC_SECURITY_DOMAIN	| teiid_security  |
-      | ODBC_SECURITY_DOMAIN	| teiid_odbc  |
-      | ODATA_SECURITY_DOMAIN	| teiid_odata  |
+      | DEFAULT_SECURITY_DOMAIN	| teiid-security  |
       | teiid_security_SECURITY_DOMAIN_NAME	        | teiid-security  |
       | teiid_security_SECURITY_DOMAIN_CACHE_TYPE	| default  |
       | teiid_security_SECURITY_DOMAIN_LOGIN_MODULES	    | ldap,rolemapping  |
       | ldap_LOGIN_MODULE_CODE	    | LdapExtended  |
       | ldap_LOGIN_MODULE_FLAG	    | required  |
       | ldap_MODULE_OPTION_NAME_java_naming_provider_url	    | java.naming.provider.url  |
-      | ldap_MODULE_OPTION_VALUE_java_naming_provider_url	    | "ldap://127.45.2.1:389"  |
+      | ldap_MODULE_OPTION_VALUE_java_naming_provider_url	    | hostnameurl  |
       | rolemapping_LOGIN_MODULE_CODE	    | RoleMapping  |
       | rolemapping_LOGIN_MODULE_FLAG	    | optional  |
       | rolemapping_MODULE_OPTION_NAME_replaceRole	    | replaceRole  |
       | rolemapping_MODULE_OPTION_VALUE_replaceRole	    | false  |
     Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='security-domain']/@name
-    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value LdapExtended on XPath //*[local-name()='security-domain'][@name='teiid-  security']/*[local-name()='authentication']/*[local-name()='login-module']/@code
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value LdapExtended on XPath //*[local-name()='security-domain'][@name='teiid-security']/*[local-name()='authentication']/*[local-name()='login-module']/@code
     Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value RoleMapping on XPath //*[local-name()='security-domain'][@name='teiid-security']/*[local-name()='authentication']/*[local-name()='login-module']/@code
-    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-odata on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
     Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='jdbc']/*[local-name()='authentication']/@security-domain
-    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-odbc on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
