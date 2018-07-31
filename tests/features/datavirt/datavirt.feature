@@ -53,44 +53,8 @@ Feature: OpenShift Datavirt tests
     Then container log should contain WARN Secure JDBC transport missing alias, keystore, key password, and/or keystore directory for authentication mode '1-way'. Will not be enabled
 
   @wip
-  Scenario: Don't configure jdv server to use LDAP authentication
+  Scenario: The default teiid-security security domain should be created
     When container is ready
-    Then container log should contain AUTH_LDAP_URL not set. Skipping LDAP integration...
-    And file /opt/eap/standalone/configuration/standalone-openshift.xml should not contain <login-module code="LdapExtended"
+    And file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="RealmDirect"
+    And XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='security-domain']/@name
 
-  @wip
-  Scenario: Configure jdv server to use LDAP authentication
-    When container is started with env
-      | variable          | value     |
-      | AUTH_LDAP_URL	  | test_url  |
-    Then container log should contain AUTH_LDAP_URL is set to test_url. Added LdapExtended login-module
-    And file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="LdapExtended"
-    And XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value LdapExtended on XPath //*[local-name()='security-domain'][@name='teiid-security']/*[local-name()='authentication']/*[local-name()='login-module']/@code
-
-  # [CLOUD-1862] Add custom configuration to define 
-  @wip
-  Scenario: Check transport that teiid-security is defaulted when no security domain is specified
-    When container is ready
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='jdbc']/*[local-name()='authentication']/@security-domain
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
-
-  @wip
-  Scenario: Check transport when default security domain is set
-    When container is started with env
-      | variable                | value   |
-      | DEFAULT_SECURITY_DOMAIN | testing |
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value testing on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value testing on XPath //*[local-name()='transport'][@name='jdbc']/*[local-name()='authentication']/@security-domain
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value testing on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
-
-  @wip
-  Scenario: Check transport when all 3 security domains specified
-    When container is started with env
-      | variable                | value    |
-      | JDBC_SECURITY_DOMAIN    | testing1 |
-      | ODBC_SECURITY_DOMAIN    | testing2 |
-      | ODATA_SECURITY_DOMAIN   | testing3 |
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value testing3 on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
-  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value testing1 on XPath //*[local-name()='transport'][@name='jdbc']/*[local-name()='authentication']/@security-domain
-Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value testing2 on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
