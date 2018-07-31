@@ -418,13 +418,6 @@
                         <policy-module code="Delegating" flag="required"/>
                     </authorization>
                 </security-domain>
-                <security-domain name="teiid-security" cache-type="default">
-                    <authentication>
-                        <login-module code="RealmDirect" flag="sufficient">
-                            <module-option name="password-stacking" value="useFirstPass"/>
-                        </login-module>
-                    </authentication>
-                </security-domain>
                 <!-- ##KEYCLOAK_SECURITY_DOMAIN## -->
                 <!-- ##ADDITIONAL_SECURITY_DOMAINS## -->
             </security-domains>
