@@ -55,8 +55,14 @@ Feature: OpenShift Datavirt tests
   @wip
   Scenario: The default teiid-security security domain should be created
     When container is ready
+<<<<<<< HEAD
     Then file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="RealmDirect"
     AND XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='security-domain']/@name
 
 
     
+=======
+    And file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="RealmDirect"
+    And XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='security-domain']/@name
+
+>>>>>>> b26a8e887eedb977f5751ed286d57fefb4fd74be
