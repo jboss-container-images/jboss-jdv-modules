@@ -52,8 +52,46 @@ Feature: OpenShift Datavirt tests
       | DATAVIRT_TRANSPORT_KEYSTORE_DIR          | /etc/jdv-secret-volume                      |
     Then container log should contain WARN Secure JDBC transport missing alias, keystore, key password, and/or keystore directory for authentication mode '1-way'. Will not be enabled
 
+    # [CLOUD-1862] Default security domain is configured 
   @wip
   Scenario: The default teiid-security security domain should be created
     When container is ready
     Then file /opt/eap/standalone/configuration/standalone-openshift.xml should contain <login-module code="RealmDirect"
     AND XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='security-domain']/@name
+
+  # [CLOUD-1862] Default security domain is used for the transport 
+  @wip
+  Scenario: Check transport that teiid-security is defaulted when no security domain is specified
+    When container is ready
+  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
+  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='jdbc']/*[local-name()='authentication']/@security-domain
+  Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
+  
+  # [CLOUD-1862] Configure ENV to configure 2 login modules in the teiid-security security domain 
+    @wip
+  Scenario: Configure jdv server to use security domains ldap and rolemapping
+    When container is started with env
+      | variable                | value     |
+      | SECURITY_DOMAINS	    | teiid_security  |
+      | JDBC_SECURITY_DOMAIN	| teiid_security  |
+      | ODBC_SECURITY_DOMAIN	| teiid_odbc  |
+      | ODATA_SECURITY_DOMAIN	| teiid_odata  |
+      | teiid_security_SECURITY_DOMAIN_NAME	        | teiid-security  |
+      | teiid_security_SECURITY_DOMAIN_CACHE_TYPE	| default  |
+      | teiid_security_SECURITY_DOMAIN_LOGIN_MODULES	    | ldap,rolemapping  |
+      | ldap_LOGIN_MODULE_CODE	    | LdapExtended  |
+      | ldap_LOGIN_MODULE_FLAG	    | required  |
+      | ldap_MODULE_OPTION_NAME_java_naming_provider_url	    | java.naming.provider.url  |
+      | ldap_MODULE_OPTION_VALUE_java_naming_provider_url	    | "ldap://127.45.2.1:389"  |
+      | rolemapping_LOGIN_MODULE_CODE	    | RoleMapping  |
+      | rolemapping_LOGIN_MODULE_FLAG	    | optional  |
+      | rolemapping_MODULE_OPTION_NAME_replaceRole	    | replaceRole  |
+      | rolemapping_MODULE_OPTION_VALUE_replaceRole	    | false  |
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='security-domain']/@name
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value LdapExtended on XPath //*[local-name()='security-domain'][@name='teiid-  security']/*[local-name()='authentication']/*[local-name()='login-module']/@code
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value RoleMapping on XPath //*[local-name()='security-domain'][@name='teiid-security']/*[local-name()='authentication']/*[local-name()='login-module']/@code
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-odata on XPath //*[local-name()='transport'][@name='odata']/*[local-name()='authentication']/@security-domain
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-security on XPath //*[local-name()='transport'][@name='jdbc']/*[local-name()='authentication']/@security-domain
+    Then XML file /opt/eap/standalone/configuration/standalone-openshift.xml should contain value teiid-odbc on XPath //*[local-name()='transport'][@name='odbc']/*[local-name()='authentication']/@security-domain
+
+

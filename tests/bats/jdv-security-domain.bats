@@ -34,14 +34,14 @@ source $JBOSS_HOME/bin/launch/security-domains.sh
 @test "configure using env file" {
     cp $BATS_TEST_DIRNAME/resources/standalone-openshift-security-domain.xml $CONFIG_FILE
 
+     run prepareEnv
+
     RUN_ENV="$BATS_TEST_DIRNAME/securitydomain.env"
     . "$RUN_ENV"   
  
      echo "Security domain $SECURITY_DOMAINS"
-    echo "$output"
-
-     run prepareEnv
-
+    echo "$output"     
+     
      run configure
 
 

@@ -22,7 +22,7 @@ function prepareEnv() {
   done
   unset SECURITY_DOMAINS
   
-  unset_security_ldap_env
+#  unset_security_ldap_env
 
 }
 
@@ -38,12 +38,9 @@ function clearDomainEnv() {
 }
 
 function configure() {
-  echo "Configure sec domains"
   configure_security_domains
 #  configure_ldap_security_domain
-   echo "Config legacy"
   configure_legacy_security_domains
-   echo "set transports"
   set_transport_security_domains
 
 }
@@ -61,13 +58,15 @@ function configure_security_domains() {
       local security_login_modules=$(find_env ${domain_prefix}_SECURITY_DOMAIN_LOGIN_MODULES)
       
       if [ -n "$security_login_modules" ]; then
+
+        local security_domain="<security-domain name=\"$security_domain_name\" cache-type=\"$security_domain_cache_type\">"
+        security_domain="$security_domain <authentication>"
+      
         for login_module_prefix in $(echo $security_login_modules | sed "s/,/ /g"); do
       
             local login_module_name=$(find_env ${login_module_prefix}_LOGIN_MODULE_NAME)
-            
-            local security_domain="<security-domain name=\"$security_domain_name\" cache-type=\"$security_domain_cache_type\">"
 
-            security_domain="$security_domain <authentication>"
+            
             local login_module_code=$(find_env ${login_module_prefix}_LOGIN_MODULE_CODE)
             local login_module_flag=$(find_env ${login_module_prefix}_LOGIN_MODULE_FLAG)
             local login_module_module=$(find_env ${login_module_prefix}_LOGIN_MODULE_MODULE)
@@ -84,11 +83,14 @@ function configure_security_domains() {
                 option_value=$(find_env `sed 's/_NAME_/_VALUE_/' <<< ${option}`)
                 security_domain="$security_domain <module-option name=\"$option_name\" value=\"$option_value\"/>"
             done
-            security_domain="$security_domain </login-module></authentication></security-domain>"
             
-            sed -i "s|<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|${security_domain}<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|" "$CONFIG_FILE"
-        
+            security_domain="$security_domain </login-module>"
+            
         done
+        
+        security_domain="$security_domain </authentication></security-domain>"
+        sed -i "s|<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|${security_domain}<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|" "$CONFIG_FILE"
+        
       
       else
       
@@ -100,20 +102,22 @@ function configure_security_domains() {
      done
   else
   
-       log_info "Configure default teiid-security domain"
-        configure_default_domain
+#       log_info "Configure default teiid-security domain"
+       configure_default_domain
 
   fi  
 }
 
 function configure_default_domain() {
+    DEFAULT_SECURITY_DOMAIN=${DEFAULT_SECURITY_DOMAIN:-teiid-security}
+
     SECURITY_DOMAINS="teiid_security"
     
-    JDBC_SECURITY_DOMAIN="teiid-security"
-    ODBC_SECURITY_DOMAIN="teiid-security"
-    ODATA_SECURITY_DOMAIN="teiid-security"
+    JDBC_SECURITY_DOMAIN=$DEFAULT_SECURITY_DOMAIN
+    ODBC_SECURITY_DOMAIN=$DEFAULT_SECURITY_DOMAIN
+    ODATA_SECURITY_DOMAIN=$DEFAULT_SECURITY_DOMAIN
 
-    teiid_security_SECURITY_DOMAIN_NAME="teiid-security"
+    teiid_security_SECURITY_DOMAIN_NAME=$DEFAULT_SECURITY_DOMAIN
     teiid_security_SECURITY_DOMAIN_CACHE_TYPE="default"
     teiid_security_SECURITY_DOMAIN_LOGIN_MODULES="realmdirect"
 
@@ -177,5 +181,5 @@ function set_transport_security_domains(){
   
   RESULT_DOMAIN=${ODATA_SECURITY_DOMAIN:-${DEFAULT_SECURITY_DOMAIN}}
   
-#  log_info "Security domain used for OData transport is ${RESULT_DOMAIN}"
+  log_info "Security domain used for OData transport is ${RESULT_DOMAIN}"
 }

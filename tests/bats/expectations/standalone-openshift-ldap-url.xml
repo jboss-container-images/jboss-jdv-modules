@@ -24,23 +24,8 @@
             </authorization>
         </security-domain>
         <!-- ##KEYCLOAK_SECURITY_DOMAIN## -->
-        <security-domain name="teiid-security" cache-type="default"> 
-            <authentication> 
-                <login-module code="LdapExtended" flag="required" > 
-                    <module-option name="java.naming.provider.url" value="ldap://127.45.2.1:389"/> 
-                </login-module>
-            </authentication>
-        </security-domain>
-        <security-domain name="teiid-security" cache-type="default"> 
-            <authentication> 
-                <login-module code="RoleMapping" flag="optional" > 
-                    <module-option name="false" value="false"/> 
-                </login-module>
-            </authentication>
-        </security-domain>
-        <!-- no additional security domains configured -->
-        <!-- ##ADDITIONAL_SECURITY_DOMAINS## -->
-    </security-domains>
+        <security-domain name="teiid-security" cache-type="default"> <authentication> <login-module code="LdapExtended" flag="required" > <module-option name="java.naming.provider.url" value="ldap://127.45.2.1:389"/> </login-module> <login-module code="RoleMapping" flag="optional" > <module-option name="replaceRole" value="false"/> </login-module> </authentication></security-domain><!-- no additional security domains configured --><!-- ##ADDITIONAL_SECURITY_DOMAINS## -->
+        </security-domains>
 </subsystem>
 <subsystem xmlns="urn:jboss:domain:teiid:1.0">
     <async-thread-pool>teiid-async</async-thread-pool>
