@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+       <subsystem xmlns="urn:jboss:domain:teiid:1.0">
+            <async-thread-pool>teiid-async</async-thread-pool>
+            <policy-decider-module>org.jboss.teiid</policy-decider-module>
+            <resultset-cache infinispan-container="teiid-cache"/>
+            <preparedplan-cache infinispan-container="teiid-cache"/>
+            <distributed-cache jgroups-stack="tcp"/>
+            <transport name="embedded"/>
+            <transport name="odata">
+                <authentication security-domain="testSecurityDomain"/>
+            </transport>
+            <transport name="jdbc" socket-binding="teiid-jdbc" protocol="teiid">
+                <authentication security-domain="testSecurityDomain"/>
+            </transport>
+            <transport name="odbc" socket-binding="teiid-odbc" protocol="pg">
+                <authentication security-domain="testSecurityDomain"/>
+                <ssl mode="disabled"/>
+            </transport>
+        </subsystem>

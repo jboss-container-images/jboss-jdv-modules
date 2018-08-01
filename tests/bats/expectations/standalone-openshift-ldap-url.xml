@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<subsystem xmlns="urn:jboss:domain:security:2.0">
+    <!-- ##ELYTRON_INTEGRATION## -->
+    <security-domains>
+        <security-domain name="other" cache-type="default">
+            <authentication>
+                <login-module code="Remoting" flag="optional">
+                    <module-option name="password-stacking" value="useFirstPass"/>
+                </login-module>
+                <login-module code="RealmDirect" flag="required">
+                    <module-option name="password-stacking" value="useFirstPass"/>
+                </login-module>
+                <!-- ##OTHER_LOGIN_MODULES## -->
+            </authentication>
+        </security-domain>
+        <security-domain name="jboss-web-policy" cache-type="default">
+            <authorization>
+                <policy-module code="Delegating" flag="required"/>
+            </authorization>
+        </security-domain>
+        <security-domain name="jboss-ejb-policy" cache-type="default">
+            <authorization>
+                <policy-module code="Delegating" flag="required"/>
+            </authorization>
+        </security-domain>
+        <!-- ##KEYCLOAK_SECURITY_DOMAIN## -->
+        <security-domain name="teiid-security" cache-type="default"> <authentication> <login-module code="LdapExtended" flag="required" > <module-option name="java.naming.provider.url" value="ldap://127.45.2.1:389"/> </login-module> <login-module code="RoleMapping" flag="optional" > <module-option name="replaceRole" value="false"/> </login-module> </authentication></security-domain><!-- no additional security domains configured --><!-- ##ADDITIONAL_SECURITY_DOMAINS## -->
+        </security-domains>
+</subsystem>
+<subsystem xmlns="urn:jboss:domain:teiid:1.0">
+    <async-thread-pool>teiid-async</async-thread-pool>
+    <policy-decider-module>org.jboss.teiid</policy-decider-module>
+    <resultset-cache infinispan-container="teiid-cache"/>
+    <preparedplan-cache infinispan-container="teiid-cache"/>
+    <distributed-cache jgroups-stack="tcp"/>
+    <transport name="embedded"/>
+    <transport name="odata">
+        <authentication security-domain="teiid-security"/>
+    </transport>
+    <transport name="jdbc" socket-binding="teiid-jdbc" protocol="teiid">
+        <authentication security-domain="teiid-security"/>
+    </transport>
+    <transport name="odbc" socket-binding="teiid-odbc" protocol="pg">
+        <authentication security-domain="teiid-security"/>
+        <ssl mode="disabled"/>
+    </transport>
+</subsystem>
