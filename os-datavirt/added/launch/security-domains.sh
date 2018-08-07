@@ -34,17 +34,10 @@ function clearDomainEnv() {
   done
 }
 
-function configure() {
-  log_info "start Configure security domain"
+function configureEnv() {
   configure_security_domains
   configure_legacy_security_domains
   set_transport_security_domains
-
-}
-
-function configureEnv() {
-  log_info "start ConfigureEnv security domain"
-  configure
 }
 
 function configure_security_domains() {
@@ -93,8 +86,6 @@ function configure_security_domains() {
         
         security_domain="$security_domain </authentication></security-domain>"
         sed -i "s|<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|${security_domain}<!-- ##ADDITIONAL_SECURITY_DOMAINS## -->|" "$CONFIG_FILE"
-        
-        log_info "Security domain config ${security_domain}"
 
       else
       
@@ -106,15 +97,13 @@ function configure_security_domains() {
      done
   else
   
-#       log_info "Configure default teiid-security domain"
+       log_info "Configure default teiid-security domain"
        configure_default_domain
 
   fi  
 }
 
 function configure_default_domain() {
-    log_info "Configure default security domain teiid-security"
-
     
     DEFAULT_SECURITY_DOMAIN=${DEFAULT_SECURITY_DOMAIN:-teiid-security}
 
