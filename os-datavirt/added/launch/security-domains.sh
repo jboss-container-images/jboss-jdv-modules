@@ -9,17 +9,10 @@ function prepareEnv() {
   unset SECDOMAIN_ROLES_PROPERTIES
   unset SECDOMAIN_LOGIN_MODULE
   unset SECDOMAIN_PASSWORD_STACKING
-  
-  unset JDBC_SECURITY_DOMAIN
-  unset ODBC_SECURITY_DOMAIN
-  unset ODATA_SECURITY_DOMAIN
-  
-  unset DEFAULT_SECURITY_DOMAIN
-
+    
   for prefix in $(echo $SECURITY_DOMAINS | sed "s/,/ /g"); do
     clearDomainEnv $prefix
   done
-  unset SECURITY_DOMAINS
   
 }
 
