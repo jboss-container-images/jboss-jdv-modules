@@ -9,11 +9,7 @@ function prepareEnv() {
   unset TEIID_USERNAME
   unset MODESHAPE_PASSWORD
   unset MODESHAPE_USERNAME
-  unset DATAVIRT_TRANSPORT_KEY_ALIAS
-  unset DATAVIRT_TRANSPORT_KEYSTORE
-  unset DATAVIRT_TRANSPORT_KEYSTORE_PASSWORD
-  unset DATAVIRT_TRANSPORT_KEYSTORE_TYPE
-  unset DATAVIRT_TRANSPORT_KEYSTORE_DIR
+  
   unset DATAVIRT_USERS
   unset DATAVIRT_USER_PASSWORDS
   unset DATAVIRT_USER_GROUPS
@@ -66,53 +62,7 @@ function update_users(){
   
 }
 
-function add_secure_transport(){
-  local key_alias=${DATAVIRT_TRANSPORT_KEY_ALIAS}
-  local keystore=${DATAVIRT_TRANSPORT_KEYSTORE-$HTTPS_KEYSTORE}
-  local keystore_pwd=${DATAVIRT_TRANSPORT_KEYSTORE_PASSWORD-$HTTPS_PASSWORD}
-  local keystore_type=${DATAVIRT_TRANSPORT_KEYSTORE_TYPE-$HTTPS_KEYSTORE_TYPE}
-  local keystore_dir=${DATAVIRT_TRANSPORT_KEYSTORE_DIR-$HTTPS_KEYSTORE_DIR}
-  local auth_mode=${DATAVIRT_TRANSPORT_AUTHENTICATION_MODE}
 
-  if [ -n "$key_alias" ] && [ -n "$keystore_pwd" ] && [ -n "$keystore" ] && [ -n "$keystore_dir" ]; then
-    if [ -z "$keystore_type" ]; then
-      keystore_type="JKS"
-    fi
-
-    if [ -z "$auth_mode" ]; then
-      auth_mode="1-way"
-    fi
-  fi
-
-  if [ -n "$auth_mode" ]; then
-    if [ "$auth_mode" != "anonymous" ]; then
-      if [ -z "$key_alias" ] || [ -z "$keystore_pwd" ] || [ -z "$keystore" ] || [ -z "$keystore_dir" ]; then
-        log_warning "Secure JDBC transport missing alias, keystore, key password, and/or keystore directory for authentication mode '$auth_mode'. Will not be enabled"
-        return
-      fi
-    fi
-
-    # JDBC
-transport="<transport name=\"secure-jdbc\" socket-binding=\"secure-teiid-jdbc\" protocol=\"teiid\"><authentication security-domain=\"##JDBC_SECURITY_DOMAIN##\"/><ssl mode=\"enabled\" authentication-mode=\"$auth_mode\" ssl-protocol=\"TLSv1.2\" keymanagement-algorithm=\"SunX509\">"
-
-    if [ "$auth_mode" != "anonymous" ]; then 
-      transport="$transport <keystore name=\"${keystore_dir}/${keystore}\" password=\"$DATAVIRT_TRANSPORT_KEYSTORE_PASSWORD\" type=\"$keystore_type\" key-alias=\"$key_alias\"/><truststore name=\"${keystore_dir}/${keystore}\" password=\"$keystore_pwd\"/>"
-    fi
-
-    transport="$transport </ssl></transport>"
-
-    # ODBC
-    transport="$transport <transport name=\"secure-odbc\" socket-binding=\"secure-teiid-odbc\" protocol=\"pg\"><authentication security-domain=\"##ODBC_SECURITY_DOMAIN##\"/><ssl mode=\"enabled\" authentication-mode=\"$auth_mode\" ssl-protocol=\"TLSv1.2\" keymanagement-algorithm=\"SunX509\">"
-
-    if [ "$auth_mode" != "anonymous" ]; then
-      transport="$transport <keystore name=\"${keystore_dir}/${keystore}\" password=\"$DATAVIRT_TRANSPORT_KEYSTORE_PASSWORD\" type=\"$keystore_type\" key-alias=\"$key_alias\"/><truststore name=\"${keystore_dir}/${keystore}\" password=\"$keystore_pwd\"/>"
-    fi
-
-    transport="$transport </ssl></transport>"
-
-    sed -i "s|<!-- ##TEIID_SECURE_TRANSPORT## -->|${transport}|g" ${CONFIG_FILE}
-  fi
-}
 
 function add_users(){
   if [ -n $DATAVIRT_USERS ]; then
@@ -160,8 +110,6 @@ function configure_teiid(){
   update_users
 
   add_roles
-
-  add_secure_transport
 
 }
 

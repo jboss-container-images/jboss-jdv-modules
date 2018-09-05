@@ -16,4 +16,5 @@
                 <authentication security-domain="testSecurityDomain"/>
                 <ssl mode="disabled"/>
             </transport>
+            <!-- ##TEIID_SECURE_TRANSPORT## -->
         </subsystem>

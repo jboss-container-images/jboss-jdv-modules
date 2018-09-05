@@ -24,11 +24,14 @@
             </authorization>
         </security-domain>
         <!-- ##KEYCLOAK_SECURITY_DOMAIN## -->
-        <security-domain name="teiid-security" cache-type="default">
-            <authentication>
-                <login-module code="RealmDirect" flag="sufficient">
-                    <module-option name="password-stacking" value="useFirstPass"/>
-                </login-module>
+        <security-domain name="teiid-security" cache-type="default"> 
+            <authentication> 
+                <login-module code="LdapExtended" flag="required" > 
+                    <module-option name="java.naming.provider.url" value="hosturl"/> 
+                </login-module> 
+                <login-module code="RoleMapping" flag="optional" > 
+                    <module-option name="replaceRole" value="false"/> 
+                </login-module> 
             </authentication>
         </security-domain>
         <!-- ##ADDITIONAL_SECURITY_DOMAINS## -->

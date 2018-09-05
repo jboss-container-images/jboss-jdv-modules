@@ -19,14 +19,39 @@ source $JBOSS_HOME/bin/launch/security-domains.sh
 
 @test "replace transport security domain placeholder with testSecurityDomain" {
     cp $BATS_TEST_DIRNAME/resources/standalone-transport-security-domains.xml $CONFIG_FILE
-    run prepareEnv
 
     DEFAULT_SECURITY_DOMAIN="testSecurityDomain"
 
+    run preConfigure
     run configure
+
+    run preConfigureEnv
+    run configureEnv
+
+    run postConfigure
+
 
  #   [ "$output" = "[INFO]Security domain used for OData transport is testSecurityDomain" ]
     [ "$status" -eq 0 ]
     assert_xml $CONFIG_FILE $BATS_TEST_DIRNAME/expectations/standalone-transport-security-domains.xml
 }
 
+@test "replace secure transport placeholder" {
+    cp $BATS_TEST_DIRNAME/resources/standalone-transport-security-domains.xml $CONFIG_FILE
+
+    RUN_ENV="$BATS_TEST_DIRNAME/transport.env"
+    . "$RUN_ENV"   
+
+    run preConfigure
+    run configure
+
+    run preConfigureEnv
+    run configureEnv
+
+    run postConfigure
+
+
+ #   [ "$output" = "[INFO]Security domain used for OData transport is testSecurityDomain" ]
+    [ "$status" -eq 0 ]
+    assert_xml $CONFIG_FILE $BATS_TEST_DIRNAME/expectations/standalone-secure-transport.xml
+}
