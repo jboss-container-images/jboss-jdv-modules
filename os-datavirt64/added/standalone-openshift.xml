@@ -107,6 +107,15 @@
             <logger category="jacorb.config">
                 <level name="ERROR"/>
             </logger>
+            <logger category="org.teiid">
+                <level name="INFO"/>
+            </logger>
+            <logger category="org.teiid.COMMAND_LOG" >
+                <level name="DEBUG"/>
+            </logger>
+            <logger category="org.teiid.AUDIT_LOG" >
+                <level name="DEBUG"/>
+            </logger>
             <root-logger>
                 <level name="INFO"/>
                 <handlers>
@@ -530,10 +539,12 @@
             <translator name="ucanaccess" module="org.jboss.teiid.translator.jdbc"/>
             <translator name="simpledb" module="org.jboss.teiid.translator.simpledb"/>
             <translator name="couchbase" module="org.jboss.teiid.translator.couchbase"/>
+            <translator name="amazon-s3" module="org.jboss.teiid.translator.amazon.s3"/>
             <translator name="infinispan-hotrod" module="org.jboss.teiid.translator.infinispan.hotrod"/>
 
             <translator name="infinispan-cache-dsl" module="org.jboss.teiid.translator.infinispan.dsl"/>
             <translator name="infinispan-cache" module="org.jboss.teiid.translator.infinispan.cache"/>
+            <translator name="exasol" module="org.jboss.teiid.translator.jdbc"/>
 
             <!-- ##TEIID_TRANSLATORS## -->
         </subsystem>
