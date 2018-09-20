@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $JBOSS_HOME/bin/launch/logging.sh
+source $JBOSS_CONTAINER_UTIL_LOGGING_MODULE/logging.sh
 
 # Resulting WAR files will be deployed to /opt/eap/standalone/deployments
 DEPLOY_DIR=$JBOSS_HOME/standalone/deployments

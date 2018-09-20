@@ -1,0 +1,31 @@
+
+source "${JBOSS_CONTAINER_UTIL_LOGGING_MODULE}/logging.sh"
+source "${JBOSS_CONTAINER_EAP_S2I_MODULE}/s2i-core-hooks"
+
+function s2i_core_env_init_hook() {
+  eap_s2i_env_init
+  
+  DATAVIRT_S2I_SOURCE_VDB_DIRS="${DATAVIRT_S2I_SOURCE_VDB_DIRS:-${VDB_DIRS:-.}}"
+}
+
+function s2i_core_copy_artifacts_hook() {
+  eap_s2i_copy_modules $*
+  jdv_s2i_copy_VDB_DIRS $*
+}
+
+function jdv_s2i_copy_VDB_DIRS() {
+  (
+    S2I_SOURCE_DEPLOYMENTS_FILTER="*-vdb.xml *-vdb.xml.dodeploy *.vdb *.vdb.dodeploy"
+    if [ -z "${DATAVIRT_S2I_SOURCE_VDB_DIRS}" ]; then
+          log_info "DATAVIRT_S2I_SOURCE_VDB_DIRS does not exist, using '.'."
+          S2I_SOURCE_DEPLOYMENTS_DIR=.
+          s2i_core_copy_deployments "${1}"
+    else
+        for vdb_dir in $(echo $DATAVIRT_S2I_SOURCE_VDB_DIRS | sed "s/,/ /g"); do
+          log_info "Deploying vdb files from ${vdb_dir}..."
+          S2I_SOURCE_DEPLOYMENTS_DIR=${vdb_dir}
+          s2i_core_copy_deployments "${1}"
+        done
+    fi 
+  )
+}

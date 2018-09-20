@@ -1,0 +1,25 @@
+schema_version: 1
+name: jboss.container.datavirt.s2i.bash
+version: '1.0'
+description: Customization of common Maven S2I for JDV S2I images.
+
+envs:
+- name: JBOSS_CONTAINER_DATAVIRT_S2I_MODULE
+  value: /opt/jboss/container/datavirt/s2i
+- name: S2I_SOURCE_DEPLOYMENTS_FILTER
+  value: "*.war *.ear *.rar *.jar *-vdb.xml *-vdb.xml.dodeploy *.vdb *.vdb.dodeploy"
+- name: DATAVIRT_S2I_SOURCE_VDB_DIRS
+  description: ^
+    Comma separated list of relative paths to directories containing vdb files to
+    be copied over to the product deployment directory, see
+    **S2I_TARGET_DEPLOYMENTS_DIR**.  Defaults to **.**.
+  example: src/vdbs
+
+execute:
+- script: configure.sh
+- script: backward_compatibility.sh
+
+modules:
+  install:
+  - name: jboss.container.eap.s2i.bash
+  - name: jboss.container.util.logging.bash
